@@ -265,6 +265,52 @@
               }
             }
           ]
+        },
+        {
+          "name": "GET missing reading returns 404 ProblemDetails",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/readings/R-20990101-9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "readings",
+                "R-20990101-9999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('env') === 'mock') {",
+                  "  pm.test('Mock may return generated response - document this behavior', function () { pm.expect([200, 404]).to.include(pm.response.code); });",
+                  "} else {",
+                  "  pm.test('Missing reading returns 404', function () { pm.response.to.have.status(404); });",
+                  "  function assertProblemDetails() {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('type');",
+                  "    pm.expect(json).to.have.property('title');",
+                  "    pm.expect(json).to.have.property('status', 404);",
+                  "    pm.expect(json).to.have.property('detail');",
+                  "    pm.expect(json).to.have.property('instance');",
+                  "  }",
+                  "  assertProblemDetails();",
+                  "}"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
